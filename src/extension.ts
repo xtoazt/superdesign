@@ -1866,23 +1866,43 @@ class SuperdesignCanvasPanel {
 			} catch (error) {
 				Logger.warn(`Error processing CSS link ${cssFileName}: ${error}`);
 			}
-		}
-		
-		return modifiedContent;
-	}
+        }
+        
+        return modifiedContent;
+    }
 }
 
 function getNonce() {
-	let text = '';
-	const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-	for (let i = 0; i < 32; i++) {
-		text += possible.charAt(Math.floor(Math.random() * possible.length));
-	}
-	return text;
+    let text = '';
+    const possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (let i = 0; i < 32; i++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
+
+// 👇 Added Groq API key configuration command
+export function activate(context: vscode.ExtensionContext) {
+    // ... your other activate logic
+
+    const configureGroqApiKey = vscode.commands.registerCommand('superdesign.configureGroqApiKey', async () => {
+        const apiKey = await vscode.window.showInputBox({
+            prompt: 'Enter your Groq API Key',
+            ignoreFocusOut: true,
+            password: true
+        });
+
+        if (apiKey) {
+            const config = vscode.workspace.getConfiguration('superdesign');
+            await config.update('groqApiKey', apiKey, vscode.ConfigurationTarget.Global);
+            vscode.window.showInformationMessage('Groq API Key saved!');
+        }
+    });
+
+    context.subscriptions.push(configureGroqApiKey);
 }
 
 // This method is called when your extension is deactivated
 export function deactivate() {
-	Logger.dispose();
+    Logger.dispose();
 }
-
